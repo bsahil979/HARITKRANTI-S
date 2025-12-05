@@ -123,8 +123,9 @@ console.log("MONGODB_URI:", URI ? (URI.includes("@") ? "Set (credentials present
 
 // Start server even if MongoDB connection fails (for development)
 // This allows the API to be available even if DB is not connected
-app.listen(PORT, () => {
-  console.log(`🚀 API running http://localhost:${PORT}`);
+// Listen on 0.0.0.0 to allow external connections (required for Render deployment)
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 API running on port ${PORT}`);
   console.log("⚠️  Attempting MongoDB connection...");
   
   connectDB(URI)

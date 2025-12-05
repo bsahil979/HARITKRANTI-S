@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: haritkranti-backend
+    env: node
+    plan: free  # Change to 'starter' or 'standard' for production
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Add other environment variables in Render dashboard
+      # MONGODB_URI
+      # JWT_SECRET
+      # JWT_EXPIRE
+      # CLOUDINARY_CLOUD_NAME
+      # CLOUDINARY_API_KEY
+      # CLOUDINARY_API_SECRET
+      # GOOGLE_TRANSLATE_API_KEY
+      # FRONTEND_URL
+      # PORT (auto-set by Render)
+

@@ -1,10 +1,18 @@
 import mongoose from "mongoose";
 import Product from "../src/models/Product.js";
 import dotenv from "dotenv";
+import { getMongoUri } from "../src/utils/mongoUri.js";
 
 dotenv.config();
 
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/haritkranti";
+let MONGODB_URI;
+try {
+  MONGODB_URI = getMongoUri();
+} catch (error) {
+  console.error(error.message);
+  console.error("Please set MONGODB_URI in your environment variables");
+  process.exit(1);
+}
 
 async function migrateProducts() {
   try {
