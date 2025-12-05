@@ -68,6 +68,7 @@ import notificationRouter from "./routes/notification.routes.js";
 import imageRouter from "./routes/image.routes.js";
 import cropRecommendationRouter from "./routes/cropRecommendation.routes.js";
 import categoryRouter from "./routes/category.routes.js";
+import translationRouter from "./routes/translation.routes.js";
 import { errorHandler, notFound } from "./middleware/error.js";
 
 const app = express();
@@ -82,6 +83,13 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 app.get("/health", (req, res) => res.json({ ok: true }));
 
+// Debug: Check if translation API key is loaded
+if (process.env.GOOGLE_TRANSLATE_API_KEY) {
+  console.log('✅ GOOGLE_TRANSLATE_API_KEY loaded successfully');
+} else {
+  console.warn('⚠️  GOOGLE_TRANSLATE_API_KEY not found in environment variables');
+}
+
 // Routes
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
@@ -94,6 +102,7 @@ app.use("/api/notifications", notificationRouter);
 app.use("/api/images", imageRouter);
 app.use("/api/crop-recommendation", cropRecommendationRouter);
 app.use("/api/categories", categoryRouter);
+app.use("/api/translation", translationRouter);
 
 app.use(notFound);
 app.use(errorHandler);
