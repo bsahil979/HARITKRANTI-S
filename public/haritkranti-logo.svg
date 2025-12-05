@@ -1,0 +1,29 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="30" fill="#10B981" opacity="0.1"/>
+  
+  <!-- Plant/Seedling -->
+  <path d="M32 45V25" stroke="#10B981" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Left leaf -->
+  <path d="M32 30C28 26 20 26 18 30C20 34 28 34 32 30Z" fill="#10B981"/>
+  
+  <!-- Right leaf -->
+  <path d="M32 30C36 26 44 26 46 30C44 34 36 34 32 30Z" fill="#059669"/>
+  
+  <!-- Technology elements - small dots representing sensors/IoT -->
+  <circle cx="22" cy="20" r="2" fill="#3B82F6" opacity="0.8"/>
+  <circle cx="42" cy="20" r="2" fill="#3B82F6" opacity="0.8"/>
+  <circle cx="18" cy="40" r="2" fill="#3B82F6" opacity="0.8"/>
+  <circle cx="46" cy="40" r="2" fill="#3B82F6" opacity="0.8"/>
+  
+  <!-- Connection lines (representing smart connectivity) -->
+  <path d="M22 20L32 25" stroke="#3B82F6" stroke-width="1" opacity="0.5"/>
+  <path d="M42 20L32 25" stroke="#3B82F6" stroke-width="1" opacity="0.5"/>
+  <path d="M18 40L32 35" stroke="#3B82F6" stroke-width="1" opacity="0.5"/>
+  <path d="M46 40L32 35" stroke="#3B82F6" stroke-width="1" opacity="0.5"/>
+  
+  <!-- Ground line -->
+  <path d="M20 45H44" stroke="#10B981" stroke-width="2" stroke-linecap="round"/>
+</svg>
+

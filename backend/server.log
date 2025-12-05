@@ -1,0 +1,38 @@
+﻿node : C:\Users\Sahil Belchada\Desktop\git_check1\HARITKRANTI-final\backend\nod
+e_modules\path-to-regexp\dist\index.js:153
+At line:1 char:33
++ cd "HARITKRANTI-final\backend"; node src/index.js 2>&1 | Out-File -Fi ...
++                                 ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\Sahil ...st\index.js:153 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+            throw new PathError(`Unexpected ${token.type} at index 
+${token.index}, expected ${endType}`, str);
+                  ^
+
+PathError [TypeError]: Unexpected ? at index 13, expected end: /user/:userId?; 
+visit https://git.new/pathToRegexpError for info
+    at consumeUntil (C:\Users\Sahil Belchada\Desktop\git_check1\HARITKRANTI-fin
+al\backend\node_modules\path-to-regexp\dist\index.js:153:19)
+    at parse (C:\Users\Sahil Belchada\Desktop\git_check1\HARITKRANTI-final\back
+end\node_modules\path-to-regexp\dist\index.js:157:26)
+    at pathToRegexp (C:\Users\Sahil Belchada\Desktop\git_check1\HARITKRANTI-fin
+al\backend\node_modules\path-to-regexp\dist\index.js:267:58)
+    at Object.match (C:\Users\Sahil Belchada\Desktop\git_check1\HARITKRANTI-fin
+al\backend\node_modules\path-to-regexp\dist\index.js:237:30)
+    at matcher (C:\Users\Sahil Belchada\Desktop\git_check1\HARITKRANTI-final\ba
+ckend\node_modules\router\lib\layer.js:86:23)
+    at new Layer (C:\Users\Sahil Belchada\Desktop\git_check1\HARITKRANTI-final\
+backend\node_modules\router\lib\layer.js:93:62)
+    at Function.route (C:\Users\Sahil Belchada\Desktop\git_check1\HARITKRANTI-f
+inal\backend\node_modules\router\index.js:428:17)
+    at Router.<computed> [as get] (C:\Users\Sahil Belchada\Desktop\git_check1\H
+ARITKRANTI-final\backend\node_modules\router\index.js:447:24)
+    at file:///C:/Users/Sahil%20Belchada/Desktop/git_check1/HARITKRANTI-final/b
+ackend/src/routes/image.routes.js:36:8
+    at ModuleJob.run (node:internal/modules/esm/module_job:274:25) {
+  originalPath: '/user/:userId?'
+}
+
+Node.js v22.16.0
