@@ -72,6 +72,10 @@ export async function translateObject(translations, targetLang) {
   }
 
   try {
+    console.log(`🌐 Requesting translation for language: ${targetLang}`);
+    console.log(`📡 API URL: ${API_BASE_URL}/translation/object`);
+    console.log(`📦 Translation keys count: ${Object.keys(translations).length}`);
+    
     const response = await fetch(`${API_BASE_URL}/translation/object`, {
       method: 'POST',
       headers: {
@@ -83,21 +87,37 @@ export async function translateObject(translations, targetLang) {
       })
     });
 
+    console.log(`📊 Response status: ${response.status} ${response.statusText}`);
+
     if (!response.ok) {
-      const error = await response.json();
-      console.error('Translation API error:', error);
+      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+      console.error('❌ Translation API error:', error);
+      console.error(`❌ Status: ${response.status}, StatusText: ${response.statusText}`);
       // Fallback to English if translation fails
       return translations;
     }
 
-    const { translations: translated } = await response.json();
+    const data = await response.json();
+    const translated = data.translations;
+    
+    if (!translated) {
+      console.error('❌ Translation response missing translations object:', data);
+      return translations;
+    }
+    
+    console.log(`✅ Translation successful! Received ${Object.keys(translated).length} translated keys`);
     
     // Cache the translations
     cacheTranslations(targetLang, translated);
 
     return translated;
   } catch (error) {
-    console.error('Translation service error:', error);
+    console.error('❌ Translation service error:', error);
+    console.error('❌ Error details:', {
+      message: error.message,
+      name: error.name,
+      stack: error.stack
+    });
     // Fallback to English if API call fails
     return translations;
   }

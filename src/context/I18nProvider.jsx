@@ -220,8 +220,10 @@ export function I18nProvider({ children }) {
 
       // Load from API
       setIsLoading(true);
+      console.log(`🔄 Loading translations for language: ${lang}`);
       try {
         const translated = await translateObject(englishTranslations, lang);
+        console.log(`✅ Translations loaded for ${lang}:`, Object.keys(translated).length, 'keys');
         setTranslations(translated);
         // Cache in state
         setTranslationCache(prev => ({
@@ -229,7 +231,8 @@ export function I18nProvider({ children }) {
           [lang]: translated
         }));
       } catch (error) {
-        console.error("Error loading translations:", error);
+        console.error("❌ Error loading translations:", error);
+        console.error("❌ Error details:", error.message, error.stack);
         // Fallback to English on error
         setTranslations(englishTranslations);
       } finally {
