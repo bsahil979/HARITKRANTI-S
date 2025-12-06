@@ -43,11 +43,14 @@ This guide will walk you through deploying the **Frontend to Vercel** and **Back
    - **Branch:** `main` (or your default branch)
    - **Root Directory:** `backend` ⚠️ **IMPORTANT: Set this to `backend`**
    - **Runtime:** `Node`
-   - **Build Command:** `npm install`
-   - **Start Command:** `npm start`
+   - **Build Command:** `npm install` ⚠️ **CRITICAL: Only this, NOT `npm run dev`**
+   - **Start Command:** `npm start` ⚠️ **CRITICAL: Must be `npm start`, NOT `npm run dev`**
+   - **Health Check Path:** `/health` ⚠️ **IMPORTANT: Set this so Render knows your service is ready**
    - **Instance Type:** Choose based on your needs:
      - **Free:** Limited hours/month, spins down after inactivity
      - **Starter ($7/month):** Always on, better performance
+   
+   ⚠️ **Common Mistake:** Do NOT use `npm run dev` in production! It uses `nodemon` which is for development only.
 
 4. **Click "Create Web Service"**
 
@@ -133,9 +136,9 @@ PORT=10000
    - Click **"Environment Variables"**
    - Add the following:
      ```
-     VITE_API_URL=https://your-backend-url.onrender.com/api
+     VITE_API_URL=https://haritkranti-s-5.onrender.com/api
      ```
-   - Replace `your-backend-url.onrender.com` with your actual Render backend URL
+   - ⚠️ **IMPORTANT:** Use your actual backend URL (currently: `https://haritkranti-s-5.onrender.com/api`)
    - Make sure to select **Production**, **Preview**, and **Development** environments
 
 5. **Click "Deploy"**
@@ -187,6 +190,25 @@ If you need to update the API URL after deployment:
 ## 🐛 Troubleshooting
 
 ### Backend Issues
+
+**Problem: Backend stuck at "Building" / Deployment not completing**
+- ✅ **Server is running** - If you see `🚀 API running on port 10000` and `✅ MongoDB connected successfully` in logs, your server is working!
+- **Issue 1: Wrong Build/Start Commands** ⚠️ **MOST COMMON**
+  - If logs show `npm run dev` or `nodemon`, you're using development commands!
+  - **Fix:** Go to Render Dashboard → Settings → Build & Deploy
+    - **Build Command:** Must be `npm install` (nothing else)
+    - **Start Command:** Must be `npm start` (NOT `npm run dev`)
+  - Save and redeploy
+- **Issue 2: Health Check Not Configured**
+  - Go to Render Dashboard → Your Service → **Settings** → Scroll to **Health Check Path**
+  - Set it to: `/health`
+  - Save changes (Render will redeploy)
+- **Solution 3:** Wait 1-2 minutes - Render health checks can take time
+- **Solution 4:** Manually test the health endpoint:
+  - Open: `https://your-backend.onrender.com/health` in a browser
+  - Should return: `{"ok":true,"status":"healthy","timestamp":"..."}`
+  - If it works, Render should detect it soon
+- **Solution 5:** Check if service is actually live - Sometimes it shows "Building" but is actually live. Try accessing your backend URL directly.
 
 **Problem: Backend not starting / "Server running on localhost" error**
 - ⚠️ **CRITICAL:** Your server must listen on `0.0.0.0`, not `localhost`

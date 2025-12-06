@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/slices/cartSlice";
 import { placeholder } from "../assets";
@@ -13,7 +13,10 @@ import {
 
 const ProductCard = ({ product, userLocation }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { t } = useI18n();
+  
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   // Debug logging
   console.log("ProductCard received product:", product);
@@ -26,11 +29,21 @@ const ProductCard = ({ product, userLocation }) => {
   };
 
   const handleAddToCart = () => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      // Redirect to login page (which has links to register)
+      navigate("/login");
+      return;
+    }
+
+    // Check if user is a farmer (farmers cannot add to cart)
+    if (user?.role === "farmer") {
+      alert("Farmers cannot place orders. Please use a consumer account.");
+      return;
+    }
+
+    // User is authenticated and is a consumer, proceed with adding to cart
     dispatch(addToCart({ product, quantity: 1 }));
-    // Show success message
-    setTimeout(() => {
-      // Optional: You can add a toast notification here
-    }, 100);
   };
 
   // Calculate delivery and freshness information

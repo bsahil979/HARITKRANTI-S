@@ -81,7 +81,15 @@ app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-app.get("/health", (req, res) => res.json({ ok: true }));
+// Health check endpoint for Render deployment
+app.get("/health", (req, res) => {
+  res.status(200).json({ ok: true, status: "healthy", timestamp: new Date().toISOString() });
+});
+
+// Root endpoint
+app.get("/", (req, res) => {
+  res.json({ message: "HaritKranti API", status: "running", health: "/health" });
+});
 
 // Debug: Check if translation API key is loaded
 if (process.env.GOOGLE_TRANSLATE_API_KEY) {

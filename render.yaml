@@ -5,6 +5,7 @@ services:
     plan: free  # Change to 'starter' or 'standard' for production
     buildCommand: npm install
     startCommand: npm start
+    healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
