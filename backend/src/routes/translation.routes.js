@@ -3,6 +3,19 @@ import { translateText, translateBatch, translateObject } from '../controllers/t
 
 const router = express.Router();
 
+// Health check endpoint for translation service
+router.get('/status', (req, res) => {
+  const apiKey = process.env.GOOGLE_TRANSLATE_API_KEY;
+  res.json({
+    available: !!apiKey,
+    apiKeyConfigured: !!apiKey,
+    apiKeyLength: apiKey ? apiKey.length : 0,
+    message: apiKey 
+      ? 'Translation service is configured and ready' 
+      : 'Translation service not available - GOOGLE_TRANSLATE_API_KEY not set'
+  });
+});
+
 // Translate single text
 router.post('/text', translateText);
 

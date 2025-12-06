@@ -23,14 +23,17 @@ function checkApiKey() {
 async function translateTextHelper(text, targetLang, retries = 2) {
   const API_KEY = checkApiKey();
   if (!API_KEY) {
+    console.error('❌ Google Translate API key not configured!');
     throw new Error('Google Translate API key not configured');
   }
 
   // Create AbortController for timeout
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+  const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout (increased from 10)
 
   try {
+    console.log(`🔄 Translating text to ${targetLang}... (${text?.substring(0, 30)}...)`);
+    
     const response = await fetch(`${TRANSLATE_API_URL}?key=${API_KEY}`, {
       method: 'POST',
       headers: {
@@ -47,23 +50,33 @@ async function translateTextHelper(text, targetLang, retries = 2) {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error?.message || 'Translation failed');
+      const errorData = await response.json().catch(() => ({ error: { message: 'Unknown error' } }));
+      console.error('❌ Translation API error:', errorData);
+      throw new Error(errorData.error?.message || `Translation failed with status ${response.status}`);
     }
 
     const data = await response.json();
-    return data.data.translations[0].translatedText;
+    const translated = data.data?.translations?.[0]?.translatedText;
+    
+    if (!translated) {
+      console.error('❌ Translation API returned invalid response:', data);
+      throw new Error('Invalid translation response');
+    }
+    
+    console.log(`✅ Translation successful: ${text?.substring(0, 30)}... → ${translated?.substring(0, 30)}...`);
+    return translated;
   } catch (error) {
     clearTimeout(timeoutId);
     
     // If it's a timeout or network error and we have retries left, try again
-    if ((error.name === 'AbortError' || error.code === 'ETIMEDOUT') && retries > 0) {
-      console.warn(`Translation timeout, retrying... (${retries} retries left)`);
+    if ((error.name === 'AbortError' || error.code === 'ETIMEDOUT' || error.message?.includes('timeout')) && retries > 0) {
+      console.warn(`⏱️ Translation timeout, retrying... (${retries} retries left)`);
       // Wait a bit before retrying
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
       return translateTextHelper(text, targetLang, retries - 1);
     }
     
+    console.error(`❌ Translation failed after retries:`, error.message);
     // Re-throw the error if no retries left or it's a different error
     throw error;
   }
@@ -231,9 +244,10 @@ export const translateObject = async (req, res) => {
 
     // Translate all values in parallel with error handling
     // Use Promise.allSettled to handle individual failures gracefully
-    const translationPromises = values.map(value => 
+    const translationPromises = values.map((value, index) => 
       translateTextHelper(value, targetLanguageCode).catch(error => {
-        console.warn(`Translation failed for value: ${value}`, error.message);
+        console.warn(`Translation failed for value at index ${index}: ${value?.substring(0, 50)}...`, error.message);
+        console.warn('Error details:', error.code || error.name, error.cause);
         // Return original value if translation fails
         return value;
       })
@@ -249,15 +263,31 @@ export const translateObject = async (req, res) => {
     res.json({ translations: result });
   } catch (error) {
     console.error('Object translation error:', error);
+    console.error('Error code:', error.code);
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    
     // Return original object if translation completely fails (graceful degradation)
     // This prevents the entire request from failing
-    if (error.message.includes('timeout') || error.message.includes('ETIMEDOUT') || error.code === 'ETIMEDOUT') {
+    if (error.message?.includes('timeout') || error.message?.includes('ETIMEDOUT') || error.code === 'ETIMEDOUT' || error.name === 'AbortError') {
       console.warn('Translation timed out, returning original text');
       return res.json({ translations: translationObject });
     }
+    
+    // Check if API key issue
+    if (error.message?.includes('API key not configured')) {
+      console.error('Google Translate API key is not configured!');
+      return res.status(503).json({ 
+        error: 'Translation service not available', 
+        message: 'Google Translate API key is not configured. Please set GOOGLE_TRANSLATE_API_KEY in environment variables.',
+        translations: translationObject // Return original as fallback
+      });
+    }
+    
     res.status(500).json({ 
       error: 'Translation failed', 
-      message: error.message 
+      message: error.message,
+      translations: translationObject // Return original as fallback
     });
   }
 };
